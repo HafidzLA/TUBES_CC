@@ -24,6 +24,11 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-app.listen(PORT, '0.0.0.0', () =>
-  console.log(`🎬  Letterboxd API → http://0.0.0.0:${PORT}`)
-);
+// Export for Vercel serverless
+module.exports = app;
+
+if (require.main === module) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🎬  Letterboxd API → http://0.0.0.0:${PORT}`);
+  });
+}
