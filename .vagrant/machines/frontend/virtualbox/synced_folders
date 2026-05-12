@@ -1,0 +1,1 @@
+{"virtualbox":{"/app/frontend":{"guestpath":"/app/frontend","hostpath":"C:/Users/LENOVO/.gemini/antigravity/scratch/letterboxd-clone/frontend","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"C:/Users/LENOVO/.gemini/antigravity/scratch/letterboxd-clone","disabled":false,"__vagrantfile":true}}}
