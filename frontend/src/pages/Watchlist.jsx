@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../components/ToastContext';
+import { apiFetch } from '../utils/api';
 
 export default function Watchlist() {
   const [movies,  setMovies]  = useState([]);
@@ -9,7 +10,7 @@ export default function Watchlist() {
   const navigate              = useNavigate();
 
   const fetchWatchlist = () =>
-    fetch('/api/watchlist/1')
+    apiFetch('/api/watchlist/1')
       .then(r => r.json())
       .then(setMovies)
       .catch(() => addToast('Failed to load watchlist', 'error'))
@@ -19,7 +20,7 @@ export default function Watchlist() {
 
   const remove = async (movie) => {
     try {
-      await fetch(`/api/watchlist/${movie.id}`, { method: 'DELETE' });
+      await apiFetch(`/api/watchlist/${movie.id}`, { method: 'DELETE' });
       setMovies(prev => prev.filter(m => m.id !== movie.id));
       addToast(`Removed "${movie.title}"`, 'default');
     } catch {
@@ -67,7 +68,7 @@ export default function Watchlist() {
                   cursor: 'pointer',
                   transition: 'border-color var(--dur) var(--ease), transform var(--dur) var(--ease)',
                 }}
-                onClick={() => navigate(`/movie/${movie.id}`)}
+                onClick={() => navigate(`/movie/${movie.tmdb_id || movie.id}`)}
                 onMouseEnter={e => {
                   e.currentTarget.style.borderColor = 'var(--border-hover)';
                   e.currentTarget.style.transform = 'translateX(4px)';
