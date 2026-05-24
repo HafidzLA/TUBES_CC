@@ -1,62 +1,45 @@
-import { useNavigate } from 'react-router-dom';
-import StarRating from './StarRating';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Star, Heart } from 'lucide-react';
+import './MovieCard.css';
 
-export default function MovieCard({ movie, isWatchlisted, onWatchlistToggle }) {
-  const navigate = useNavigate();
-  // Use tmdb_id for routing (TMDB movies), fallback to local id
-  const movieId = movie.tmdb_id || movie.id;
-  const avg = parseFloat(movie.rating_avg) || 0;
-
-  const handleWatchlist = (e) => {
-    e.stopPropagation();
-    onWatchlistToggle(movie);
-  };
-
+const MovieCard = ({ movie, ratingOverlay = true }) => {
   return (
-    <div
-      className="movie-card"
-      onClick={() => navigate(`/movie/${movieId}`)}
-      role="button" tabIndex={0}
-      onKeyDown={e => e.key === 'Enter' && navigate(`/movie/${movieId}`)}
-      aria-label={`View ${movie.title}`}
-    >
-      <img
-        className="movie-card__poster"
-        src={movie.poster_url}
-        alt={`${movie.title} poster`}
-        loading="lazy"
-        onError={e => {
-          e.target.src = `https://placehold.co/240x360/1c2230/8b949e?text=${encodeURIComponent(movie.title)}`;
-        }}
-      />
-
-      {avg > 0 && (
-        <div className="movie-card__rating-badge">★ {avg.toFixed ? avg.toFixed(1) : avg}</div>
-      )}
-      {isWatchlisted && (
-        <div className="movie-card__watchlist-badge" title="In watchlist">🔖</div>
-      )}
-
-      <div className="movie-card__overlay">
-        <div className="movie-card__title">{movie.title}</div>
-        <div className="movie-card__year">
-          {movie.year} {movie.director ? `· ${movie.director}` : ''}
+    <Link to={`/movies/${movie.id}`} className="movie-card-link">
+      <div className="movie-card">
+        {/* Poster Image */}
+        <div className="poster-wrapper">
+          <img
+            src={movie.poster_url}
+            alt={movie.title}
+            className="movie-poster"
+            loading="lazy"
+            onError={(e) => {
+              e.target.src = 'https://via.placeholder.com/200x300/1c252d/ffffff?text=' + encodeURIComponent(movie.title);
+            }}
+          />
+          {/* Hover Overlay */}
+          <div className="poster-overlay">
+            <span className="view-link">View Info</span>
+          </div>
         </div>
-        <div className="movie-card__actions">
-          <button
-            className={`btn btn--sm ${isWatchlisted ? 'btn--green' : 'btn--ghost'}`}
-            onClick={handleWatchlist}
-          >
-            {isWatchlisted ? '✓ Listed' : '+ Watch'}
-          </button>
-          <button
-            className="btn btn--sm btn--primary"
-            onClick={e => { e.stopPropagation(); navigate(`/movie/${movieId}`); }}
-          >
-            Review
-          </button>
+
+        {/* Movie Info */}
+        <div className="movie-card-info">
+          <h3 className="movie-card-title">{movie.title}</h3>
+          <div className="movie-card-meta">
+            <span className="movie-card-year">{movie.release_year}</span>
+            {ratingOverlay && movie.average_rating > 0 && (
+              <span className="movie-card-rating">
+                <Star size={12} className="star-icon" />
+                {parseFloat(movie.average_rating).toFixed(1)}
+              </span>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
-}
+};
+
+export default MovieCard;

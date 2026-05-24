@@ -1,27 +1,59 @@
-import { Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import Toast from './components/Toast';
-import { ToastProvider } from './components/ToastContext';
 import Home from './pages/Home';
-import MovieDetail from './pages/MovieDetail';
-import Watchlist from './pages/Watchlist';
+import MovieDetails from './pages/MovieDetails';
 import Profile from './pages/Profile';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Watchlist from './pages/Watchlist';
+import ReviewModal from './components/ReviewModal';
 
-export default function App() {
+function App() {
+  const [logModalOpen, setLogModalOpen] = useState(false);
+  const [selectedLogMovie, setSelectedLogMovie] = useState(null);
+
+  const handleOpenLogModal = (movie) => {
+    setSelectedLogMovie(movie);
+    setLogModalOpen(true);
+  };
+
+  const handleReviewSuccess = (movieId) => {
+    // Reload page to refresh reviews list, rating distributions, and user stats
+    window.location.reload();
+  };
+
   return (
-    <ToastProvider>
-      <Navbar />
-      <main>
-        <Routes>
-          <Route path="/"           element={<Home />} />
-          <Route path="/movie/:id"  element={<MovieDetail />} />
-          <Route path="/watchlist"  element={<Watchlist />} />
-          <Route path="/profile"    element={<Profile />} />
-        </Routes>
-      </main>
-      <Footer />
-      <Toast />
-    </ToastProvider>
+    <AuthProvider>
+      <Router>
+        <div className="app-layout">
+          {/* Global Header */}
+          <Navbar onOpenLogModal={handleOpenLogModal} />
+          
+          {/* Main App Routes */}
+          <main className="app-main-content">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/movies/:id" element={<MovieDetails onOpenLogModal={handleOpenLogModal} />} />
+              <Route path="/users/:username" element={<Profile />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/watchlist" element={<Watchlist />} />
+            </Routes>
+          </main>
+
+          {/* Global Log / Review modal */}
+          <ReviewModal 
+            movie={selectedLogMovie} 
+            isOpen={logModalOpen} 
+            onClose={() => setLogModalOpen(false)} 
+            onReviewSuccess={handleReviewSuccess}
+          />
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
+
+export default App;

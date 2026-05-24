@@ -1,1 +1,1 @@
-{"virtualbox":{"/app/backend":{"guestpath":"/app/backend","hostpath":"C:/Users/LENOVO/.gemini/antigravity/scratch/letterboxd-clone/backend","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"C:/Users/LENOVO/.gemini/antigravity/scratch/letterboxd-clone","disabled":false,"__vagrantfile":true}}}
+{"virtualbox":{"/app/backend":{"guestpath":"/app/backend","hostpath":"C:/CODING/TUBES_CC/backend","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"C:/CODING/TUBES_CC","disabled":false,"__vagrantfile":true}}}

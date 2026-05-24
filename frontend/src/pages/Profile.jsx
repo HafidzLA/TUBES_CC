@@ -1,236 +1,290 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import MovieCard from '../components/MovieCard';
 import StarRating from '../components/StarRating';
-import { apiFetch } from '../utils/api';
+import { User, Film, BookOpen, Heart, Eye, ListVideo, Calendar } from 'lucide-react';
+import UserAvatar from '../components/UserAvatar';
+import './Profile.css';
 
-function formatDate(iso) {
-  return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-}
-
-function StatCard({ value, label, icon }) {
-  return (
-    <div className="profile-stat">
-      <div className="profile-stat__icon">{icon}</div>
-      <div className="profile-stat__value">{value ?? '—'}</div>
-      <div className="profile-stat__label">{label}</div>
-    </div>
-  );
-}
-
-function SectionTitle({ children, action }) {
-  return (
-    <div className="section-header" style={{ marginBottom: 20 }}>
-      <h2 className="section-title">{children}</h2>
-      {action}
-    </div>
-  );
-}
-
-export default function Profile() {
-  const [data,    setData]    = useState(null);
+const Profile = () => {
+  const { username } = useParams();
+  const { user: currentUser, token, API_URL } = useAuth();
+  
+  const [profileData, setProfileData] = useState(null);
+  const [activeTab, setActiveTab] = useState('diary'); // 'diary', 'watchlist', 'likes'
+  const [diary, setDiary] = useState([]);
+  const [watchlist, setWatchlist] = useState([]);
+  const [likes, setLikes] = useState([]);
+  
   const [loading, setLoading] = useState(true);
-  const [tab,     setTab]     = useState('activity'); // activity | diary | watchlist
-  const navigate              = useNavigate();
+  const [error, setError] = useState('');
+
+  const fetchProfileData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch user profile info and stats
+      const profileResponse = await fetch(`${API_URL}/api/users/${username}`);
+      if (!profileResponse.ok) {
+        throw new Error('User not found');
+      }
+      const data = await profileResponse.json();
+      setProfileData(data);
+
+      // Fetch diary logs
+      const diaryResponse = await fetch(`${API_URL}/api/users/${username}/diary`);
+      if (diaryResponse.ok) {
+        const diaryData = await diaryResponse.json();
+        setDiary(diaryData);
+      }
+
+      // Fetch watchlist
+      const watchlistResponse = await fetch(`${API_URL}/api/users/${username}/watchlist`);
+      if (watchlistResponse.ok) {
+        const watchlistData = await watchlistResponse.json();
+        setWatchlist(watchlistData);
+      }
+
+      // Fetch liked movies
+      const likesResponse = await fetch(`${API_URL}/api/users/${username}/likes`);
+      if (likesResponse.ok) {
+        const likesData = await likesResponse.json();
+        setLikes(likesData);
+      }
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    apiFetch('/api/profile/1')
-      .then(r => r.json())
-      .then(setData)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+    fetchProfileData();
+  }, [username]);
 
-  if (loading) return (
-    <div className="container" style={{ paddingTop: 60 }}>
-      <div className="skeleton" style={{ height: 200, borderRadius: 'var(--radius-lg)', marginBottom: 32 }} />
-      <div className="skeleton" style={{ height: 400, borderRadius: 'var(--radius-lg)' }} />
-    </div>
-  );
-
-  if (!data || data.error) return (
-    <div className="container" style={{ paddingTop: 60 }}>
-      <div className="empty-state">
-        <div className="empty-state__icon">👤</div>
-        <div className="empty-state__title">Profile not found</div>
+  if (loading) {
+    return (
+      <div className="container home-loading">
+        <div className="spinner"></div>
+        <p>Loading filmmaker portfolio...</p>
       </div>
-    </div>
-  );
+    );
+  }
 
-  const { user, stats, recentActivity, diary, diaryTotal, watchlist } = data;
+  if (error || !profileData) {
+    return (
+      <div className="container profile-error-page">
+        <h2>We ran the credits but couldn't find the user.</h2>
+        <p>{error || 'User not found.'}</p>
+        <Link to="/" className="btn btn-primary">Go Home</Link>
+      </div>
+    );
+  }
+
+  const { user, stats } = profileData;
+  const maxRatingCount = Math.max(...Object.values(stats.ratingDistribution), 1);
+  const joinDate = new Date(user.created_at).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long'
+  });
 
   return (
-    <div className="page-enter">
-      {/* ── Profile header ──────────────────────────────── */}
-      <div className="profile-header">
-        <div className="container profile-header__inner">
-          <img
-            className="profile-avatar"
-            src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`}
-            alt={user.username}
-          />
-          <div className="profile-info">
-            <h1 className="profile-name">{user.username}</h1>
-            <p className="profile-joined">Member since {formatDate(user.created_at)}</p>
+    <div className="profile-page animate-fade-in">
+      
+      {/* 1. HEADER PROFILE CARD */}
+      <header className="profile-header-banner">
+        <div className="container header-container">
+          <div className="profile-info-block">
+            <UserAvatar username={user.username} avatarUrl={user.avatar_url} size={80} className="profile-avatar-large" />
+            <div className="profile-text">
+              <h1 className="profile-username">{user.username}</h1>
+              <p className="profile-join-date">
+                <Calendar size={14} />
+                Joined {joinDate}
+              </p>
+              {user.bio && <p className="profile-bio">{user.bio}</p>}
+            </div>
+          </div>
+
+          {/* 2. STATS DASHBOARD STRIP */}
+          <div className="profile-stats-strip">
+            <div className="profile-stat-box">
+              <span className="profile-stat-val">{stats.watchedCount}</span>
+              <span className="profile-stat-lbl">Films</span>
+            </div>
+            <div className="profile-stat-box">
+              <span className="profile-stat-val">{stats.likesCount}</span>
+              <span className="profile-stat-lbl">Likes</span>
+            </div>
+            <div className="profile-stat-box">
+              <span className="profile-stat-val">{stats.watchlistCount}</span>
+              <span className="profile-stat-lbl">Watchlist</span>
+            </div>
           </div>
         </div>
+      </header>
 
-        {/* Stats bar */}
-        <div className="container">
-          <div className="profile-stats">
-            <StatCard icon="🎬" value={stats.films_logged}    label="Films Logged" />
-            <StatCard icon="⭐" value={stats.avg_rating ? Number(stats.avg_rating).toFixed(1) : '—'} label="Avg. Rating" />
-            <StatCard icon="🔖" value={stats.watchlist_count} label="Watchlist" />
-          </div>
-        </div>
-      </div>
+      <div className="container profile-content-layout">
+        
+        {/* Main Columns: Left/Bottom items, Right side stats */}
+        <div className="profile-grid">
+          
+          <div className="profile-main-column">
+            {/* 3. TABS SELECTOR */}
+            <div className="profile-tabs">
+              <button 
+                className={`tab-btn ${activeTab === 'diary' ? 'active' : ''}`}
+                onClick={() => setActiveTab('diary')}
+              >
+                <BookOpen size={16} />
+                <span>Diary ({diary.length})</span>
+              </button>
+              <button 
+                className={`tab-btn ${activeTab === 'watchlist' ? 'active' : ''}`}
+                onClick={() => setActiveTab('watchlist')}
+              >
+                <ListVideo size={16} />
+                <span>Watchlist ({watchlist.length})</span>
+              </button>
+              <button 
+                className={`tab-btn ${activeTab === 'likes' ? 'active' : ''}`}
+                onClick={() => setActiveTab('likes')}
+              >
+                <Heart size={16} />
+                <span>Likes ({likes.length})</span>
+              </button>
+            </div>
 
-      {/* ── Tabs ────────────────────────────────────────── */}
-      <div className="container" style={{ paddingBottom: 60 }}>
-        <div className="tabs" style={{ marginTop: 32, marginBottom: 32 }}>
-          {[
-            { id: 'activity', label: '⚡ Recent Activity' },
-            { id: 'diary',    label: `📖 Diary (${diaryTotal})` },
-            { id: 'watchlist',label: `🔖 Watchlist (${stats.watchlist_count})` },
-          ].map(t => (
-            <button
-              key={t.id}
-              className={'tab' + (tab === t.id ? ' tab--active' : '')}
-              onClick={() => setTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-
-        {/* ── Recent Activity ─────────────────────────── */}
-        {tab === 'activity' && (
-          <div>
-            {recentActivity.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-state__icon">⚡</div>
-                <div className="empty-state__title">No activity yet</div>
-                <div className="empty-state__sub">Start reviewing films to see your activity here.</div>
-                <button className="btn btn--primary" style={{ marginTop: 20 }} onClick={() => navigate('/')}>Browse Films</button>
-              </div>
-            ) : (
-              <div className="activity-grid">
-                {recentActivity.map(item => (
-                  <div
-                    key={item.id}
-                    className="activity-card"
-                    onClick={() => navigate(`/movie/${item.tmdb_id || item.movie_id}`)}
-                    role="button" tabIndex={0}
-                  >
-                    <img
-                      className="activity-card__poster"
-                      src={item.poster_url}
-                      alt={item.title}
-                      onError={e => { e.target.src = `https://placehold.co/120x180/1c2230/8b949e?text=?`; }}
-                    />
-                    <div className="activity-card__body">
-                      <div className="activity-card__title">{item.title}</div>
-                      <div className="activity-card__meta">{item.year} · {item.genre?.split(',')[0]}</div>
-                      <StarRating value={item.rating} readOnly size="sm" />
-                      {item.body && (
-                        <p className="activity-card__review">"{item.body.slice(0, 100)}{item.body.length > 100 ? '…' : ''}"</p>
-                      )}
-                      <div className="activity-card__date">{formatDate(item.created_at)}</div>
+            {/* 4. TAB CONTENTS */}
+            <div className="tab-pane">
+              
+              {/* Diary Tab */}
+              {activeTab === 'diary' && (
+                <div className="diary-pane animate-fade-in">
+                  {diary.length > 0 ? (
+                    <div className="diary-list">
+                      {diary.map((item) => (
+                        <div key={item.id} className="diary-item glass-card">
+                          <img 
+                            src={item.poster_url} 
+                            alt={item.title} 
+                            className="diary-poster"
+                            onError={(e) => { e.target.src = 'https://via.placeholder.com/60x90/1c252d/ffffff?text=Film' }}
+                          />
+                          <div className="diary-details">
+                            <div className="diary-movie-header">
+                              <Link to={`/movies/${item.movie_id}`} className="diary-movie-title">
+                                {item.title}
+                              </Link>
+                              <span className="diary-movie-year">{item.release_year}</span>
+                            </div>
+                            <div className="diary-rating-row">
+                              <StarRating rating={parseFloat(item.rating)} size={14} />
+                              {item.is_liked && <Heart size={14} className="diary-heart-icon" fill="currentColor" />}
+                            </div>
+                            {item.content && (
+                              <p className="diary-review-snippet">
+                                {item.contains_spoilers ? <span className="diary-spoiler-warning">[SPOILERS REVEALED IN POST] </span> : ''}
+                                {item.content}
+                              </p>
+                            )}
+                          </div>
+                          <div className="diary-date">
+                            {new Date(item.created_at).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric'
+                            })}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── Diary ───────────────────────────────────── */}
-        {tab === 'diary' && (
-          <div>
-            {diary.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-state__icon">📖</div>
-                <div className="empty-state__title">Your diary is empty</div>
-                <div className="empty-state__sub">Films you review will appear here as diary entries.</div>
-                <button className="btn btn--primary" style={{ marginTop: 20 }} onClick={() => navigate('/')}>Browse Films</button>
-              </div>
-            ) : (
-              <div className="diary-list">
-                {/* Header */}
-                <div className="diary-row diary-row--header">
-                  <span>DATE</span>
-                  <span>FILM</span>
-                  <span>RATING</span>
-                  <span>REVIEW</span>
+                  ) : (
+                    <div className="profile-empty-state glass-card">
+                      <BookOpen size={48} />
+                      <p>You haven’t logged any movies in your diary yet.</p>
+                    </div>
+                  )}
                 </div>
-                {diary.map(entry => (
-                  <div
-                    key={entry.id}
-                    className="diary-row"
-                    onClick={() => navigate(`/movie/${entry.tmdb_id || entry.movie_id}`)}
-                    role="button" tabIndex={0}
-                  >
-                    <span className="diary-row__date">{formatDate(entry.created_at)}</span>
-                    <div className="diary-row__film">
-                      <img
-                        className="diary-row__poster"
-                        src={entry.poster_url}
-                        alt={entry.title}
-                        onError={e => { e.target.src = `https://placehold.co/40x60/1c2230/8b949e?text=?`; }}
-                      />
-                      <div>
-                        <div className="diary-row__title">{entry.title}</div>
-                        <div className="diary-row__year">{entry.year} · {entry.director}</div>
-                      </div>
-                    </div>
-                    <div className="diary-row__rating">
-                      <StarRating value={entry.rating} readOnly size="sm" />
-                    </div>
-                    <p className="diary-row__review">
-                      {entry.body ? `"${entry.body.slice(0, 80)}${entry.body.length > 80 ? '…' : ''}"` : '—'}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+              )}
 
-        {/* ── Watchlist ───────────────────────────────── */}
-        {tab === 'watchlist' && (
-          <div>
-            {watchlist.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-state__icon">🔖</div>
-                <div className="empty-state__title">Watchlist empty</div>
-                <div className="empty-state__sub">Add films to watch later from any movie page.</div>
-                <button className="btn btn--primary" style={{ marginTop: 20 }} onClick={() => navigate('/')}>Browse Films</button>
-              </div>
-            ) : (
-              <div className="movie-grid">
-                {watchlist.map(m => (
-                  <div
-                    key={m.tmdb_id || m.movie_id}
-                    className="movie-card"
-                    onClick={() => navigate(`/movie/${m.tmdb_id || m.movie_id}`)}
-                    role="button" tabIndex={0}
-                  >
-                    <img
-                      className="movie-card__poster"
-                      src={m.poster_url}
-                      alt={m.title}
-                      onError={e => { e.target.src = `https://placehold.co/240x360/1c2230/8b949e?text=${encodeURIComponent(m.title)}`; }}
-                    />
-                    <div className="movie-card__overlay">
-                      <div className="movie-card__title">{m.title}</div>
-                      <div className="movie-card__year">{m.year}</div>
+              {/* Watchlist Tab */}
+              {activeTab === 'watchlist' && (
+                <div className="watchlist-pane animate-fade-in">
+                  {watchlist.length > 0 ? (
+                    <div className="movie-grid-layout">
+                      {watchlist.map((movie) => (
+                        <MovieCard key={movie.id} movie={movie} />
+                      ))}
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ) : (
+                    <div className="profile-empty-state glass-card">
+                      <ListVideo size={48} />
+                      <p>Your watchlist is empty.</p>
+                      <Link to="/" className="btn btn-primary">Find Films to Watch</Link>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Likes Tab */}
+              {activeTab === 'likes' && (
+                <div className="likes-pane animate-fade-in">
+                  {likes.length > 0 ? (
+                    <div className="movie-grid-layout">
+                      {likes.map((movie) => (
+                        <MovieCard key={movie.id} movie={movie} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="profile-empty-state glass-card">
+                      <Heart size={48} />
+                      <p>You haven’t liked any movies yet.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+            </div>
           </div>
-        )}
+
+          {/* Right Column: Profile rating distribution curve */}
+          <div className="profile-side-column">
+            <div className="profile-curve-card glass-card">
+              <h3>Ratings Curve</h3>
+              {stats.watchedCount > 0 ? (
+                <div className="profile-graph">
+                  {Object.keys(stats.ratingDistribution).map((rate) => {
+                    const count = stats.ratingDistribution[rate];
+                    const heightPercent = (count / maxRatingCount) * 100;
+                    return (
+                      <div key={rate} className="profile-graph-col" title={`${rate} stars: ${count} ratings`}>
+                        <div className="profile-graph-bar-wrapper">
+                          <div 
+                            className="profile-graph-bar-fill" 
+                            style={{ height: `${Math.max(heightPercent, 2)}%` }}
+                          ></div>
+                        </div>
+                        <span className="profile-graph-bar-tick">
+                          {rate === "1.0" || rate === "3.0" || rate === "5.0" ? parseInt(rate) : ''}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="no-ratings-curve-text">Rate movies to see your distribution curve.</p>
+              )}
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </div>
   );
-}
+};
+
+export default Profile;

@@ -1,0 +1,335 @@
+.profile-page {
+  padding-bottom: 60px;
+}
+
+.profile-error-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 20px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* Header Banner styling */
+.profile-header-banner {
+  background-color: #1a232b;
+  border-bottom: 1px solid var(--border-color);
+  padding: 40px 0;
+}
+
+.header-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .header-container {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.profile-info-block {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.profile-avatar-large {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  flex-shrink: 0;
+}
+
+.profile-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-username {
+  font-size: 2rem;
+  color: white;
+  line-height: 1;
+}
+
+.profile-join-date {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-bio {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  max-width: 450px;
+}
+
+/* Stats dashboard */
+.profile-stats-strip {
+  display: flex;
+  gap: 32px;
+}
+
+.profile-stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-stat-val {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+  font-family: var(--font-heading);
+}
+
+.profile-stat-lbl {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* Content Layout Grid */
+.profile-content-layout {
+  margin-top: 40px;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+@media (min-width: 992px) {
+  .profile-grid {
+    grid-template-columns: 3fr 1fr;
+    gap: 40px;
+  }
+}
+
+.profile-main-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Tabs list styling */
+.profile-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  gap: 8px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 12px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition-smooth);
+  position: relative;
+  bottom: -1px;
+}
+
+.tab-btn:hover {
+  color: white;
+}
+
+.tab-btn.active {
+  color: white;
+  border-bottom: 2px solid var(--primary-orange);
+}
+
+/* Empty pane states */
+.profile-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  gap: 16px;
+}
+
+.profile-empty-state p {
+  font-size: 1rem;
+}
+
+/* Diary list elements */
+.diary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.diary-item {
+  display: flex;
+  gap: 20px;
+  padding: 16px;
+  background-color: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  align-items: center;
+}
+
+.diary-poster {
+  width: 50px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.diary-details {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.diary-movie-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.diary-movie-title {
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.diary-movie-title:hover {
+  color: var(--primary-blue);
+}
+
+.diary-movie-year {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.diary-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.diary-heart-icon {
+  color: #ff3366;
+}
+
+.diary-review-snippet {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-top: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.diary-spoiler-warning {
+  color: var(--primary-orange);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.diary-date {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  white-space: nowrap;
+}
+
+/* Profile Ratings Graph card */
+.profile-side-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-curve-card h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 8px;
+}
+
+.no-ratings-curve-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.profile-graph {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 80px;
+  padding-bottom: 20px;
+  position: relative;
+}
+
+.profile-graph-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  cursor: help;
+  position: relative;
+}
+
+.profile-graph-bar-wrapper {
+  width: 5px;
+  height: 100%;
+  background-color: rgba(255,255,255,0.02);
+  border-radius: 2px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.profile-graph-bar-fill {
+  width: 100%;
+  background-color: var(--primary-orange); /* Profile bars are orange, Letterboxd style! */
+  border-radius: 2px;
+  transition: height 0.5s ease-out;
+}
+
+.profile-graph-col:hover .profile-graph-bar-fill {
+  background-color: #ff9d33;
+  box-shadow: 0 0 10px rgba(255, 128, 0, 0.4);
+}
+
+.profile-graph-bar-tick {
+  position: absolute;
+  bottom: -18px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}

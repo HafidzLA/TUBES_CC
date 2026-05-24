@@ -1,32 +1,71 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../components/ToastContext';
 import { apiFetch } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 
 export default function Watchlist() {
   const [movies,  setMovies]  = useState([]);
   const [loading, setLoading] = useState(true);
   const { addToast }          = useToast();
   const navigate              = useNavigate();
+  const { user, token }       = useAuth();
 
-  const fetchWatchlist = () =>
-    apiFetch('/api/watchlist/1')
-      .then(r => r.json())
-      .then(setMovies)
-      .catch(() => addToast('Failed to load watchlist', 'error'))
-      .finally(() => setLoading(false));
+  useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
-  useEffect(() => { fetchWatchlist(); }, []);
+    const fetchWatchlist = async () => {
+      try {
+        const r = await apiFetch(`/api/users/${user.username}/watchlist`);
+        if (r.ok) {
+          const data = await r.json();
+          setMovies(data);
+        } else {
+          addToast('Failed to load watchlist', 'error');
+        }
+      } catch (err) {
+        addToast('Failed to load watchlist', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWatchlist();
+  }, [user, addToast]);
 
   const remove = async (movie) => {
     try {
-      await apiFetch(`/api/watchlist/${movie.id}`, { method: 'DELETE' });
-      setMovies(prev => prev.filter(m => m.id !== movie.id));
-      addToast(`Removed "${movie.title}"`, 'default');
+      const res = await apiFetch(`/api/movies/${movie.id}/watchlist`, {
+        method: 'POST', // Toggle endpoint in backend acts as remove if it exists
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        setMovies(prev => prev.filter(m => m.id !== movie.id));
+        addToast(`Removed "${movie.title}"`, 'default');
+      } else {
+        addToast('Failed to remove', 'error');
+      }
     } catch {
       addToast('Failed to remove', 'error');
     }
   };
+
+  if (!loading && !user) {
+    return (
+      <div className="page-enter">
+        <div className="container" style={{ textAlign: 'center', padding: '100px 0' }}>
+          <h2>Please Log In</h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: 20 }}>You need to be logged in to view your watchlist.</p>
+          <Link to="/login" className="btn btn--primary">Sign In</Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page-enter">
@@ -68,7 +107,7 @@ export default function Watchlist() {
                   cursor: 'pointer',
                   transition: 'border-color var(--dur) var(--ease), transform var(--dur) var(--ease)',
                 }}
-                onClick={() => navigate(`/movie/${movie.tmdb_id || movie.id}`)}
+                onClick={() => navigate(`/movies/${movie.tmdb_id || movie.id}`)}
                 onMouseEnter={e => {
                   e.currentTarget.style.borderColor = 'var(--border-hover)';
                   e.currentTarget.style.transform = 'translateX(4px)';
@@ -89,7 +128,7 @@ export default function Watchlist() {
                 <div>
                   <div style={{ fontWeight: 600, marginBottom: 4 }}>{movie.title}</div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    {movie.year} · {movie.director} · <span style={{ color: 'var(--accent)' }}>{movie.genre}</span>
+                    {movie.release_year || movie.year} · {movie.director || 'TMDB'} · <span style={{ color: 'var(--accent)' }}>{movie.average_rating ? (movie.average_rating / 2).toFixed(1) : ''}</span>
                   </div>
                 </div>
                 <button
