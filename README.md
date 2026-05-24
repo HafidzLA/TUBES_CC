@@ -43,6 +43,7 @@ Setelah Anda selesai menggunakan web atau ingin beristirahat, matikan VM dengan 
 vagrant halt
 ```
 
+
 ---
 
 ## Cara Menjalankan Secara Lokal (Tanpa VM)
