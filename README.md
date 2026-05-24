@@ -43,11 +43,6 @@ Setelah Anda selesai menggunakan web atau ingin beristirahat, matikan VM dengan 
 vagrant halt
 ```
 
-### (Tambahan) Menghapus VM
-Jika proyek sudah benar-benar selesai dan Anda ingin menghapus seluruh VM beserta datanya untuk mengosongkan ruang penyimpanan di komputer, jalankan perintah:
-```bash
-vagrant destroy -f
-```
 
 ---
 
