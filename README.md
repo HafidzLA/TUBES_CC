@@ -1,11 +1,11 @@
-# ShutterScore (Kloningan Letterboxd) - Web App 3-VM
+# 🍿 ShutterScore
 
-Halo! Selamat datang di ShutterScore. Ini adalah aplikasi web tempat kamu bisa mencatat, memberi rating, dan menemukan film-film menarik layaknya aplikasi Letterboxd. Aplikasi ini dirancang dengan gaya dark aesthetic yang keren dan elegan.
+Selamat datang di **ShutterScore**. Aplikasi ini merupakan platform berbasis web di mana pengguna dapat mencatat, memberikan penilaian (rating), dan menemukan berbagai rekomendasi film yang menarik, terinspirasi dari aplikasi Letterboxd. Antarmuka aplikasi ini didesain dengan tema *dark aesthetic* untuk memberikan pengalaman visual yang elegan.
 
-Proyek ini dibuat agar bisa dijalankan pada tiga Virtual Machine (VM) atau server yang terpisah, yaitu:
-1. VM Database: Tempat menyimpan semua data (menggunakan PostgreSQL di dalam Docker).
-2. VM Backend: Otak dari aplikasi ini, yang memproses data dari dan ke database (menggunakan Node.js + Express).
-3. VM Frontend: Tampilan antarmuka (User Interface) yang akan dilihat oleh pengguna (menggunakan React + Vite dan Nginx).
+Secara teknis, proyek ini dirancang dengan arsitektur terdistribusi yang berjalan pada **tiga Virtual Machine (VM)** atau server terpisah:
+- 🗄️ **VM Database**: Berfungsi sebagai tempat penyimpanan seluruh data pengguna dan informasi film. Komponen ini menggunakan **PostgreSQL** yang berjalan di dalam *container* Docker.
+- 🧠 **VM Backend**: Bertindak sebagai pemroses utama logika bisnis dan jembatan pertukaran data. Komponen ini dibangun menggunakan **Node.js** dan framework **Express**.
+- 🎨 **VM Frontend**: Merupakan antarmuka pengguna (User Interface) interaktif. Dibangun menggunakan **React** dan **Vite**, serta dilayani oleh **Nginx** sebagai *web server*.
 
 ---
 
@@ -24,49 +24,52 @@ graph TD
 
 ---
 
-## Panduan Penggunaan VM (Vagrant)
+## 🛠️ Panduan Penggunaan VM (menggunakan Vagrant)
 
-Proyek ini dikelola menggunakan Vagrant dan VirtualBox. Pastikan Anda membuka terminal (Command Prompt/PowerShell) tepat di dalam folder proyek ini sebelum menjalankan perintah di bawah.
+Sistem *server* pada proyek ini dikonfigurasi menggunakan **Vagrant** dan **VirtualBox**. Sebelum memulai, pastikan Anda telah membuka terminal (Command Prompt atau PowerShell) tepat pada direktori root proyek ini.
 
-### 1. Menghidupkan VM
-Untuk menyalakan semua VM dari kondisi mati, ketik perintah berikut di terminal:
+### 1. Menghidupkan Virtual Machine
+Untuk menyalakan seluruh VM dari kondisi nonaktif, jalankan perintah berikut pada terminal:
 ```bash
 vagrant up
 ```
-Tunggu beberapa saat hingga proses selesai. Vagrant akan secara otomatis membuat dan menyalakan ketiga server.
+Mohon tunggu beberapa saat. Vagrant akan secara otomatis melakukan inisialisasi dan mengaktifkan ketiga server tersebut. 
 
-Setelah menyala, Anda bisa langsung membuka browser dan mengakses aplikasi web melalui alamat IP yang telah ditentukan (misalnya http://192.168.56.12).
+Setelah proses selesai, Anda dapat membuka peramban (*browser*) dan mengakses aplikasi web melalui alamat IP yang telah ditetapkan (misalnya: `http://192.168.56.12`).
 
-### 2. Mematikan VM
-Setelah Anda selesai menggunakan web atau ingin beristirahat, matikan VM dengan aman agar tidak membebani komputer Anda. Gunakan perintah:
+### 2. Mematikan Virtual Machine
+Apabila Anda telah selesai menggunakan aplikasi, sangat disarankan untuk mematikan VM agar sumber daya komputer Anda tidak terbebani. Gunakan perintah berikut:
 ```bash
 vagrant halt
 ```
+Perintah ini akan mematikan seluruh mesin virtual secara aman.
 
 
 ---
 
-## Cara Menjalankan Secara Lokal (Tanpa VM)
+## 🐳 Panduan Menjalankan Secara Lokal (Tanpa VM)
 
-Jika kamu ingin mencoba menjalankan keseluruhan aplikasi di komputermu sendiri tanpa VM, kamu cukup menggunakan Docker Compose:
+Apabila Anda ingin menjalankan keseluruhan aplikasi secara langsung pada komputer lokal Anda tanpa menggunakan VM, Anda dapat memanfaatkan **Docker Compose**:
 
-1. Buka terminal di folder utama proyek ini.
-2. Jalankan perintah:
+1. Buka terminal pada direktori root proyek ini.
+2. Jalankan perintah berikut untuk membangun dan menjalankan seluruh *container* di latar belakang:
    ```bash
-   docker-compose up -d --build
+   docker compose up -d --build
    ```
-3. Buka browser dan akses:
-   - Frontend (Tampilan): http://localhost:8080
-   - API Backend: http://localhost:5000
+3. Setelah proses selesai, aplikasi siap diakses melalui peramban:
+   - 🎨 **Tampilan Web (Frontend)**: `http://localhost:8080`
+   - ⚙️ **API Backend**: `http://localhost:5000`
 
 ---
 
-## Akun Percobaan (Default)
+## 🔑 Akun Uji Coba
 
-Kami sudah menyiapkan beberapa akun yang bisa langsung kamu gunakan untuk mencoba login. Semua akun ini memiliki password yang sama, yaitu: password123
+Untuk mempermudah pengujian, kami telah menyediakan beberapa akun percobaan yang dapat langsung Anda gunakan untuk *login*.
 
-1. Username: cinephile99 (Email: cinephile99@shutterscore.com)
-2. Username: filmgirl (Email: filmgirl@shutterscore.com)
-3. Username: shutter_admin (Email: admin@shutterscore.com)
+Seluruh akun di bawah ini menggunakan kata sandi (*password*) yang sama, yaitu: **`password123`**
 
-Selamat mencoba!
+- 🎬 **Username:** `cinephile99` (Email: `cinephile99@shutterscore.com`)
+- 🍿 **Username:** `filmgirl` (Email: `filmgirl@shutterscore.com`)
+- 👑 **Username:** `shutter_admin` (Email: `admin@shutterscore.com`)
+
+Selamat mencoba dan mengeksplorasi aplikasi ini!
