@@ -30,8 +30,10 @@ services:
       - "5000:5000"
     environment:
       PORT: 5000
+      NODE_ENV: development
       DATABASE_URL: postgresql://shutter_user:shutter_secure_pass_2026@db:5432/shutterscore
       JWT_SECRET: shutter_score_secret_jwt_key_2026
+      TMDB_API_KEY: 41b82ee6b82c57e8a62bdfc9bd2a71ee
     depends_on:
       db:
         condition: service_healthy

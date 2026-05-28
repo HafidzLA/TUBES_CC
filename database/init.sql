@@ -160,21 +160,21 @@ INSERT INTO users (username, email, password_hash, bio, avatar_url) VALUES
 (
     'cinephile99', 
     'cinephile99@shutterscore.com', 
-    '$2a$10$7zB3LshbY/C.2471Gq5fQeF75jS2Z79VnL9fM.Xw10U.146kU9iG.', -- bcrypt hash of 'password123'
+    '$2a$10$L4ZOrm490TRiC9RZKj4H4OSYGX7fuvxswpkCxpUbvxsZEZV9qa7PS', -- bcrypt hash of 'password123'
     'Watching movies is my full-time personality. Nolan fanboy, Miyazaki lover, Tarantino apologist.', 
     '/avatars/user1.png'
 ),
 (
     'filmgirl', 
     'filmgirl@shutterscore.com', 
-    '$2a$10$7zB3LshbY/C.2471Gq5fQeF75jS2Z79VnL9fM.Xw10U.146kU9iG.', -- bcrypt hash of 'password123'
+    '$2a$10$L4ZOrm490TRiC9RZKj4H4OSYGX7fuvxswpkCxpUbvxsZEZV9qa7PS', -- bcrypt hash of 'password123'
     'Just someone who loves storytelling in all forms. Parasite changed my life.', 
     '/avatars/user2.png'
 ),
 (
     'shutter_admin',
     'admin@shutterscore.com',
-    '$2a$10$7zB3LshbY/C.2471Gq5fQeF75jS2Z79VnL9fM.Xw10U.146kU9iG.', -- bcrypt hash of 'password123'
+    '$2a$10$L4ZOrm490TRiC9RZKj4H4OSYGX7fuvxswpkCxpUbvxsZEZV9qa7PS', -- bcrypt hash of 'password123'
     'Official admin of ShutterScore. Welcome to the cinema club!',
     '/avatars/admin.png'
 );

@@ -9,6 +9,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Watchlist from './pages/Watchlist';
 import ReviewModal from './components/ReviewModal';
+import { ToastProvider } from './components/ToastContext';
+import Toast from './components/Toast';
 
 function App() {
   const [logModalOpen, setLogModalOpen] = useState(false);
@@ -25,34 +27,39 @@ function App() {
   };
 
   return (
-    <AuthProvider>
-      <Router>
-        <div className="app-layout">
-          {/* Global Header */}
-          <Navbar onOpenLogModal={handleOpenLogModal} />
-          
-          {/* Main App Routes */}
-          <main className="app-main-content">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/movies/:id" element={<MovieDetails onOpenLogModal={handleOpenLogModal} />} />
-              <Route path="/users/:username" element={<Profile />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/watchlist" element={<Watchlist />} />
-            </Routes>
-          </main>
+    <ToastProvider>
+      <AuthProvider>
+        <Router>
+          <div className="app-layout">
+            {/* Global Header */}
+            <Navbar onOpenLogModal={handleOpenLogModal} />
+            
+            {/* Main App Routes */}
+            <main className="app-main-content">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/movies/:id" element={<MovieDetails onOpenLogModal={handleOpenLogModal} />} />
+                <Route path="/users/:username" element={<Profile />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/watchlist" element={<Watchlist />} />
+              </Routes>
+            </main>
+  
+            {/* Global Log / Review modal */}
+            <ReviewModal 
+              movie={selectedLogMovie} 
+              isOpen={logModalOpen} 
+              onClose={() => setLogModalOpen(false)} 
+              onReviewSuccess={handleReviewSuccess}
+            />
 
-          {/* Global Log / Review modal */}
-          <ReviewModal 
-            movie={selectedLogMovie} 
-            isOpen={logModalOpen} 
-            onClose={() => setLogModalOpen(false)} 
-            onReviewSuccess={handleReviewSuccess}
-          />
-        </div>
-      </Router>
-    </AuthProvider>
+            {/* Global Toast Notifications */}
+            <Toast />
+          </div>
+        </Router>
+      </AuthProvider>
+    </ToastProvider>
   );
 }
 
